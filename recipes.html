@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipes - Stephanie and John</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Satisfy&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #E85D75;
+      --primary-light: #FFBDCA;
+      --primary-dark: #C43E56;
+      --accent: #FF9EB1;
+      --accent-light: #FFD1DA;
+      --bg: #FFF5F7;
+      --bg-card: #FFFFFF;
+      --text: #4A2030;
+      --text-light: #8C5068;
+      --border: #FFE4EA;
+      --shadow: rgba(74,32,48,0.1);
+      --shadow-hover: rgba(74,32,48,0.18);
+      --radius: 24px;
+      --radius-sm: 4px;
+      --font-display: 'Satisfy', cursive;
+      --font-body: 'Poppins', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100dvh;
+    }
+
+    /* --- Back link --- */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 1rem 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-decoration: none;
+      font-family: 'Times New Roman', serif;
+    }
+    .back-link:hover { color: var(--primary); }
+    .back-link svg { width: 16px; height: 16px; }
+
+    /* --- Header --- */
+    .header {
+      text-align: center;
+      padding: 2rem 1.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, var(--primary-light) 0%, transparent 70%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 400;
+      color: var(--primary);
+      position: relative;
+      line-height: 1.1;
+    }
+    .header p {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+      font-weight: 500;
+      position: relative;
+    }
+    .squiggle { display: block; margin: 0.75rem auto 0; width: 80px; height: 12px; }
+    .squiggle path { stroke: var(--primary); stroke-width: 4; fill: none; stroke-linecap: round; }
+
+    /* --- Recipes --- */
+    .recipes {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+      display: grid;
+      gap: 2.5rem;
+    }
+
+    /* --- Card --- */
+    .recipe-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 3px solid var(--primary-light);
+      box-shadow: 6px 6px 0 var(--primary-light);
+      overflow: hidden;
+      transition: box-shadow 0.25s ease, transform 0.25s ease;
+    }
+    .recipe-card:hover { transform: translateY(-4px); box-shadow: 8px 8px 0 var(--primary-light); }
+
+    .recipe-hero { position: relative; overflow: hidden; aspect-ratio: 16 / 9; border-bottom: 3px solid var(--primary-light); }
+    .recipe-hero img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center calc(50% - 200px);
+      transition: transform 0.4s ease;
+    }
+    .recipe-card:hover .recipe-hero img { transform: scale(1.03); }
+    .recipe-tag {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--accent); color: #fff;
+      font-weight: 600; font-size: 0.85rem;
+      padding: 0.35rem 0.85rem; border-radius: 8px;
+    }
+
+    .recipe-body { padding: 2rem 2rem 1.5rem; }
+    .recipe-body h2 {
+      font-family: var(--font-display);
+      font-size: 2.5rem; font-weight: 400;
+      color: var(--primary-dark); line-height: 1.15;
+    }
+    .recipe-meta { display: flex; gap: 1.5rem; margin: 0.75rem 0 1.25rem; flex-wrap: wrap; }
+    .meta-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.9rem; color: var(--text-light); font-weight: 500;
+    }
+    .meta-item svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+    .recipe-description { font-size: 1rem; color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.7; }
+
+    /* --- Photo grid (scrapbook) --- */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      padding: 1rem 2rem 2rem;
+    }
+    .photo-grid img {
+      width: 100%; aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border: 4px solid #fff;
+      box-shadow: 3px 3px 8px rgba(0,0,0,0.12);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.25s ease;
+    }
+    .photo-grid img:nth-child(1) { transform: rotate(-3deg); }
+    .photo-grid img:nth-child(2) { transform: rotate(2deg); }
+    .photo-grid img:nth-child(3) { transform: rotate(-1.5deg); }
+    .photo-grid img:nth-child(4) { transform: rotate(3deg); }
+    .photo-grid img:hover { transform: rotate(0deg) scale(1.08) !important; z-index: 2; box-shadow: 6px 6px 16px rgba(0,0,0,0.2); }
+
+    /* --- Details --- */
+    .recipe-details {
+      display: grid; grid-template-columns: 1fr 1.4fr;
+      gap: 2rem; padding: 0 2rem 2rem;
+    }
+    .detail-section h3 {
+      font-family: var(--font-display);
+      font-size: 1.65rem; color: var(--primary);
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .detail-section h3 svg { width: 22px; height: 22px; color: var(--accent); }
+    .ingredients-list { list-style: none; }
+    .ingredients-list li {
+      padding: 0.5rem 0; border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem; display: flex; align-items: baseline; gap: 0.6rem;
+    }
+    .ingredients-list li::before {
+      content: ''; width: 8px; height: 8px;
+      background: var(--primary-light); border-radius: 50%;
+      flex-shrink: 0; margin-top: 0.35rem;
+    }
+    .steps-list { list-style: none; counter-reset: steps; }
+    .steps-list li {
+      counter-increment: steps; padding: 0.65rem 0;
+      font-size: 0.95rem; display: flex; gap: 0.75rem; align-items: flex-start;
+    }
+    .steps-list li::before {
+      content: counter(steps);
+      width: 28px; height: 28px;
+      background: var(--primary); color: #fff; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0; margin-top: 0.1rem;
+    }
+
+    .recipe-divider { height: 1px; background: var(--border); margin: 0 2rem; }
+
+    /* --- Who Won --- */
+    .who-won { padding: 1.75rem 2rem 2rem; text-align: center; }
+    .who-won h3 { font-family: var(--font-display); font-size: 2rem; color: var(--primary); margin-bottom: 0.75rem; }
+    .who-won p { font-size: 1rem; color: var(--text-light); line-height: 1.7; }
+    .winner-badge {
+      display: inline-block; background: var(--accent-light); color: var(--text);
+      font-weight: 700; font-size: 1.1rem; padding: 0.5rem 1.5rem;
+      border-radius: 12px; margin-top: 0.75rem; border: 3px dashed var(--accent);
+    }
+    .votes { display: flex; justify-content: center; gap: 2rem; margin-top: 1.25rem; flex-wrap: wrap; }
+    .vote { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .vote svg { width: 20px; height: 20px; color: var(--accent); }
+
+    .footer {
+      text-align: center; padding: 2rem 1.5rem;
+      color: var(--text-light); font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    .footer span { color: var(--primary); }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease; backdrop-filter: blur(4px);
+    }
+    .lightbox.active { opacity: 1; pointer-events: auto; }
+    .lightbox img {
+      max-width: 90vw; max-height: 85vh;
+      border-radius: 20px; object-fit: contain;
+      box-shadow: 0 16px 64px rgba(0,0,0,0.4);
+    }
+    .lightbox-close {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,0.15);
+      border: none; border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s ease;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.3); }
+    .lightbox-close svg { width: 24px; height: 24px; color: #fff; }
+
+    @media (max-width: 768px) {
+      .recipe-body { padding: 1.5rem 1.25rem 1rem; }
+      .photo-grid { padding: 1rem 1.25rem 1.5rem; grid-template-columns: 1fr 1fr; }
+      .recipe-details { padding: 0 1.25rem 1.5rem; grid-template-columns: 1fr; }
+      .recipe-divider { margin: 0 1.25rem; }
+      .recipe-body h2 { font-size: 1.8rem; }
+      .who-won { padding: 1.75rem 1.25rem 2rem; }
+    }
+
+    /* --- Top Navbar with Tabs --- */
+    .navbar {
+      display: flex;
+      align-items: flex-end;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      gap: 0;
+    }
+    .navbar .back-link {
+      padding: 0.6rem 1rem;
+      margin-right: auto;
+      align-self: center;
+    }
+    .recipe-tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .recipe-tabs::-webkit-scrollbar { display: none; }
+    .recipe-tab {
+      padding: 0.65rem 1.3rem;
+      border: 3px solid var(--primary-light);
+      border-bottom: 3px solid var(--primary-light);
+      border-radius: 12px 12px 0 0;
+      background: var(--bg);
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--text-light);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      margin-left: -1px;
+      position: relative;
+    }
+    .recipe-tab:first-child { margin-left: 0; }
+    .recipe-tab:hover { background: var(--accent-light); }
+    .recipe-tab.active {
+      background: var(--bg-card);
+      color: var(--primary-dark);
+      border-color: var(--primary);
+      border-bottom-color: var(--bg-card);
+      z-index: 2;
+    }
+    .recipe-tab:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+    /* Card connects to active tab */
+    .recipes { padding-top: 0; }
+    .recipe-card {
+      display: none;
+      border-top-left-radius: 0;
+      border-top: 3px solid var(--primary);
+      margin-top: -3px;
+    }
+    .recipe-card.active { display: block; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>Stephanie and John's Recipe Collection</h1>
+    <p>homemade with love</p>
+    <svg class="squiggle" viewBox="0 0 80 12" aria-hidden="true">
+      <path d="M2 6 Q10 2, 20 6 Q30 10, 40 6 Q50 2, 60 6 Q70 10, 78 6" />
+    </svg>
+  </header>
+
+  <div class="navbar">
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      back to johnzhou.xyz
+    </a>
+    <nav class="recipe-tabs" aria-label="Recipe selector">
+      <button class="recipe-tab active" data-recipe="0" aria-pressed="true">Salmon vs Cod</button>
+      <button class="recipe-tab" data-recipe="1" aria-pressed="false">Pasta &amp; Charcuterie</button>
+    </nav>
+  </div>
+
+  <main class="recipes">
+    <article class="recipe-card active" data-recipe-card="0">
+      <div class="recipe-hero">
+        <img src="images/IMG_4001.jpg" alt="Dinner table spread with salmon, asparagus, salad, and red carnations" loading="eager" width="1200" height="675">
+        <span class="recipe-tag">Salmon vs Cod Showdown</span>
+      </div>
+
+      <div class="recipe-body">
+        <h2>Lemon Herb Sheet Pan Salmon vs Cod</h2>
+        <div class="recipe-meta">
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            45 min
+          </span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Serves 2
+          </span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            Easy
+          </span>
+        </div>
+        <p class="recipe-description">
+          A head-to-head showdown: salmon and cod side by side on one sheet pan, both topped with lemon slices, alongside crispy asparagus and caramelized red onions &mdash; served with a bright cucumber-tomato salad. Which fish reigns supreme?
+        </p>
+      </div>
+
+      <div class="photo-grid">
+        <img src="images/IMG_9155.jpg" alt="Sheet pan with salmon fillets topped with lemon slices, asparagus, and red onions before baking" loading="lazy" width="600" height="450">
+        <img src="images/IMG_9158.jpg" alt="Mixing the fresh cucumber, tomato, and avocado salad with seasonings" loading="lazy" width="600" height="450">
+        <img src="images/IMG_9165.jpg" alt="Overhead view of the full dinner table setting with all dishes" loading="lazy" width="600" height="450">
+        <img src="images/IMG_3994.jpg" alt="Plated lemon herb salmon with asparagus, roasted red onions, and fresh cucumber salad" loading="lazy" width="600" height="450">
+      </div>
+
+      <div class="recipe-divider"></div>
+
+      <div class="recipe-details">
+        <div class="detail-section">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H2v14h7"/><path d="M15 5h7v14h-7"/><path d="M12 5v14"/></svg>
+            Ingredients
+          </h3>
+          <ul class="ingredients-list">
+            <li>1 salmon fillet</li>
+            <li>1 cod fillet</li>
+            <li>2 sweet potatoes</li>
+            <li>1 bunch asparagus, trimmed</li>
+            <li>2 red onions, quartered</li>
+            <li>1 lemon, thinly sliced</li>
+            <li>Fresh dill &amp; capers</li>
+            <li>3&ndash;4 cloves garlic, minced</li>
+            <li>Olive oil</li>
+            <li>Ponzu sauce</li>
+            <li>Soy sauce</li>
+            <li>Honey</li>
+            <li>Lemon juice</li>
+            <li>Salt &amp; pepper</li>
+            <li>1 cucumber, diced (for salad)</li>
+            <li>2 tomatoes, diced (for salad)</li>
+            <li>&frac12; red onion, thinly sliced (for salad)</li>
+            <li>Italian seasoning (for salad)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Steps
+          </h3>
+          <ol class="steps-list">
+            <li>Preheat oven to 400&deg;F (200&deg;C). Poke holes in the sweet potatoes with a fork, wrap them in aluminum foil, and put them in the oven. Set the oven timer to 45 minutes. (Note: this timing is for small to medium sweet potatoes only.)</li>
+            <li>Make the salad so it has time to soak up the dressing: dice cucumbers and tomatoes, thinly slice red onion and shock it in an ice bath to mellow the spice. Toss together and dress with lemon juice, olive oil, salt, black pepper, and Italian seasoning. Set aside.</li>
+            <li>Prepare the sauce: mince the garlic and combine with olive oil, ponzu, soy sauce, honey, and a bit of lemon juice in a small saucepan.</li>
+            <li>Simmer the sauce on low for about 15 minutes to reduce, stirring occasionally.</li>
+            <li>Brush the reduced sauce onto the fish. Season everything with salt &amp; pepper and scatter capers over top. Layer lemon slices on top.</li>
+            <li>At the 12-minute mark, line a sheet pan with foil. Place the salmon and cod fillets on the pan. Arrange asparagus and quartered red onions around the fish.</li>
+            <li>Bake for the final 12 minutes until fish is flaky and asparagus is tender-crisp.</li>
+            <li>Top the fish with fresh dill. Unwrap the sweet potatoes, plate everything up, and enjoy!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="recipe-divider"></div>
+
+      <div class="who-won">
+        <h3>Who Won?</h3>
+        <p>After tasting both fish side by side, the verdict was unanimous.</p>
+        <div class="winner-badge">Cod takes the crown!</div>
+        <div class="votes">
+          <span class="vote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            John voted Cod
+          </span>
+          <span class="vote">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Stephanie voted Cod
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <!-- Recipe 2: Pasta Night with Charcuterie -->
+    <article class="recipe-card" data-recipe-card="1">
+      <div class="recipe-hero">
+        <img src="images/IMG_4128.jpg" alt="Dinner table with gigli pasta, meatballs, charcuterie board, arugula salad, and white wine" loading="lazy" width="1200" height="675">
+        <span class="recipe-tag">Date Night In</span>
+      </div>
+
+      <div class="recipe-body">
+        <h2>Gigli with Meatballs &amp; Charcuterie Board</h2>
+        <div class="recipe-meta">
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            25 min
+          </span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Serves 2
+          </span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            Easy
+          </span>
+        </div>
+        <p class="recipe-description">
+          A cozy date night dinner: gigli tossed in a rich tomato sauce with homemade meatballs, paired with a beautiful charcuterie board of prosciutto, cheese, grapes, and dark bread &mdash; plus a simple arugula salad and white wine.
+        </p>
+      </div>
+
+      <div class="photo-grid">
+        <img src="images/IMG_4125.jpg" alt="Charcuterie board with prosciutto, cheese, grapes, blueberries, dark bread, and fresh dill" loading="lazy" width="600" height="450">
+        <img src="images/IMG_4133.jpg" alt="Close-up of pasta plates with meatballs, charcuterie board, wine, and red carnations" loading="lazy" width="600" height="450">
+        <img src="images/IMG_4128.jpg" alt="Full table setting with pasta, charcuterie, arugula salad, wine, and flowers" loading="lazy" width="600" height="450">
+      </div>
+
+      <div class="recipe-divider"></div>
+
+      <div class="recipe-details">
+        <div class="detail-section">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H2v14h7"/><path d="M15 5h7v14h-7"/><path d="M12 5v14"/></svg>
+            Ingredients
+          </h3>
+          <ul class="ingredients-list">
+            <li>Gigli pasta (quarter bag)</li>
+            <li>Jar of tomato sauce (half jar)</li>
+            <li>Precooked chicken meatballs</li>
+            <li>Fresh parsley</li>
+            <li>Prosciutto</li>
+            <li>Hard cheese (manchego or cheddar)</li>
+            <li>Green grapes</li>
+            <li>Blueberries</li>
+            <li>Dark raisin bread, sliced</li>
+            <li>Fresh dill</li>
+            <li>Arugula</li>
+            <li>Charles Frey Riesling (Alsace)</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Steps
+          </h3>
+          <ol class="steps-list">
+            <li>Boil a big pot of water. At the same time, heat half a jar of sauce in a pan with the precooked chicken meatballs.</li>
+            <li>When the water boils, add in a quarter bag of gigli. Cook for 7 minutes till al dente.</li>
+            <li>Drain the pasta and mix with the sauce. Top with fresh parsley.</li>
+            <li>Assemble the charcuterie board: arrange prosciutto, sliced cheese, grapes, blueberries, and dark bread on a cutting board. Garnish with fresh dill.</li>
+            <li>Open a bottle of Charles Frey Riesling, plate everything up, and enjoy!</li>
+          </ol>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <p>made with <span>love</span> in Stephanie and John's kitchen</p>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-label="Photo viewer">
+    <button class="lightbox-close" aria-label="Close photo viewer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <img src="" alt="" id="lightbox-img">
+  </div>
+
+  <script>
+    // Recipe tabs
+    const recipeTabs = document.querySelectorAll('.recipe-tab');
+    const recipeCards = document.querySelectorAll('.recipe-card');
+    recipeTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const idx = tab.dataset.recipe;
+        recipeTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-pressed', 'false'); });
+        recipeCards.forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        tab.setAttribute('aria-pressed', 'true');
+        document.querySelector(`[data-recipe-card="${idx}"]`).classList.add('active');
+      });
+    });
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    document.querySelectorAll('.photo-grid img').forEach(img => {
+      img.addEventListener('click', () => { lightboxImg.src = img.src; lightboxImg.alt = img.alt; lightbox.classList.add('active'); });
+    });
+    lightbox.addEventListener('click', (e) => { if (e.target !== lightboxImg) lightbox.classList.remove('active'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lightbox.classList.remove('active'); });
+  </script>
+</body>
+</html>
