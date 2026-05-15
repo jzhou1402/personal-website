@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Plants</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Satisfy&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #3A7D44;
+      --primary-light: #B5D5C0;
+      --primary-dark: #2A5A30;
+      --accent: #6DB587;
+      --accent-light: #DBEDDF;
+      --bg: #F4FAF6;
+      --bg-card: #FFFFFF;
+      --text: #1A3020;
+      --text-light: #5A7A65;
+      --border: #C5E0CC;
+      --radius: 20px;
+      --font-display: 'Satisfy', cursive;
+      --font-body: 'Poppins', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100dvh;
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-decoration: none;
+      font-family: 'Times New Roman', serif;
+    }
+    .back-link svg { width: 16px; height: 16px; }
+    .back-link:hover { color: var(--primary); }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 0.5rem 1.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, var(--primary-light) 0%, transparent 70%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 3.5rem);
+      color: var(--primary);
+      font-weight: 400;
+      position: relative;
+    }
+    .header p {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin-top: 0.35rem;
+      position: relative;
+    }
+    .squiggle { display: block; margin: 0.6rem auto 0; width: 70px; height: 11px; }
+    .squiggle path { stroke: var(--primary); stroke-width: 3.5; fill: none; stroke-linecap: round; }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .topbar-info { font-size: 0.9rem; color: var(--text-light); }
+    .overdue-count { color: #C94444; font-weight: 600; }
+
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.2rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-add:hover { background: var(--primary-dark); }
+
+    /* Plant grid */
+    .plants-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Plant card */
+    .plant-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 3px solid var(--border);
+      box-shadow: 4px 4px 0 var(--border);
+      padding: 1.5rem;
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .plant-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 6px 6px 0 var(--border);
+    }
+    .plant-card.overdue {
+      border-color: #FFCDD2;
+      box-shadow: 4px 4px 0 #FFCDD2;
+    }
+    .plant-card.overdue:hover { box-shadow: 6px 6px 0 #FFCDD2; }
+
+    .plant-delete {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      width: 26px; height: 26px;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: background 0.15s, color 0.15s;
+    }
+    .plant-delete:hover { background: #FFEBEE; color: #C62828; }
+
+    .plant-icon { font-size: 2.2rem; margin-bottom: 0.3rem; }
+    .plant-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      padding-right: 2rem;
+      line-height: 1.25;
+    }
+    .plant-species {
+      font-size: 0.83rem;
+      color: var(--text-light);
+      font-style: italic;
+      margin: 0.15rem 0 0.85rem;
+    }
+
+    /* Thirst meter */
+    .thirst-bar { margin: 1rem 0 0.4rem; }
+    .thirst-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-light);
+      margin-bottom: 0.3rem;
+    }
+    .thirst-track {
+      height: 9px;
+      background: var(--accent-light);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .thirst-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+    .thirst-fill.low  { background: var(--accent); }
+    .thirst-fill.mid  { background: #E8C44A; }
+    .thirst-fill.high { background: #E07A3A; }
+    .thirst-fill.over { background: #C94444; }
+
+    .water-status {
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin: 0.4rem 0 0.85rem;
+    }
+    .water-status.ok    { color: var(--primary); }
+    .water-status.soon  { color: #B8860B; }
+    .water-status.warn  { color: #E07A3A; }
+    .water-status.alert { color: #C94444; }
+
+    /* Health badge */
+    .health-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 99px;
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.02em;
+      text-transform: capitalize;
+    }
+    .health-thriving   { background: #E8F5E9; color: #2E7D32; }
+    .health-good       { background: #F1F8E9; color: #558B2F; }
+    .health-okay       { background: #FFF8E1; color: #F57F17; }
+    .health-struggling { background: #FFF3E0; color: #E65100; }
+    .health-bad        { background: #FFEBEE; color: #C62828; }
+
+    .plant-last-note {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-style: italic;
+      margin-bottom: 1.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-water {
+      width: 100%;
+      padding: 0.6rem;
+      background: var(--accent-light);
+      color: var(--primary-dark);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .btn-water:hover { background: var(--accent); color: #fff; }
+    .plant-card.overdue .btn-water {
+      background: #FFEBEE;
+      border-color: #EF9A9A;
+      color: #C62828;
+    }
+    .plant-card.overdue .btn-water:hover {
+      background: #EF9A9A;
+      color: #fff;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-light);
+    }
+    .empty-state .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 1.1rem; }
+
+    /* Watering log */
+    .log-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+    .log-section h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    .log-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      font-size: 0.88rem;
+    }
+    .log-table th {
+      background: var(--accent-light);
+      padding: 0.65rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--border);
+    }
+    .log-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .log-table tr:last-child td { border-bottom: none; }
+    .log-table tbody tr:hover td { background: var(--accent-light); }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 3px solid var(--border);
+      box-shadow: 8px 8px 0 var(--border);
+      padding: 2rem;
+      width: 100%;
+      max-width: 460px;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+    .modal-backdrop.active .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .modal-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      color: var(--primary);
+    }
+    .modal-close {
+      width: 30px; height: 30px;
+      border: none; background: none;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-light);
+      font-size: 1.4rem;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: var(--accent-light); }
+
+    /* Form */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    textarea.form-input { resize: vertical; min-height: 75px; }
+
+    /* Health radio buttons */
+    .health-options {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+    .health-opt input { display: none; }
+    .health-opt label {
+      display: inline-block;
+      padding: 0.35rem 0.8rem;
+      border: 2px solid var(--border);
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+    .health-opt[data-status="thriving"]   label { color: #2E7D32; }
+    .health-opt[data-status="good"]       label { color: #558B2F; }
+    .health-opt[data-status="okay"]       label { color: #F57F17; }
+    .health-opt[data-status="struggling"] label { color: #E65100; }
+    .health-opt[data-status="bad"]        label { color: #C62828; }
+    .health-opt[data-status="thriving"]   input:checked + label { background: #E8F5E9; border-color: #2E7D32; }
+    .health-opt[data-status="good"]       input:checked + label { background: #F1F8E9; border-color: #558B2F; }
+    .health-opt[data-status="okay"]       input:checked + label { background: #FFF8E1; border-color: #F57F17; }
+    .health-opt[data-status="struggling"] input:checked + label { background: #FFF3E0; border-color: #E65100; }
+    .health-opt[data-status="bad"]        input:checked + label { background: #FFEBEE; border-color: #C62828; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.25rem;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover { background: var(--primary-dark); }
+
+    .footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .plants-grid { grid-template-columns: 1fr; }
+      .log-table { font-size: 0.78rem; }
+      .log-table th, .log-table td { padding: 0.5rem 0.65rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav style="max-width:1100px;margin:0 auto">
+    <a href="https://johnzhou.xyz" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      back to johnzhou.xyz
+    </a>
+  </nav>
+
+  <header class="header">
+    <h1>My Plants</h1>
+    <p>tracking the green things</p>
+    <svg class="squiggle" viewBox="0 0 70 11" aria-hidden="true">
+      <path d="M2 5.5 Q10 1.5, 18 5.5 Q26 9.5, 34 5.5 Q42 1.5, 50 5.5 Q58 9.5, 66 5.5 Q69 4, 68 5.5"/>
+    </svg>
+  </header>
+
+  <div class="topbar">
+    <span class="topbar-info">
+      {{ plants|length }} plant{{ 's' if plants|length != 1 else '' }}
+      {%- set overdue_count = plants|selectattr('overdue')|list|length %}
+      {% if overdue_count > 0 %}
+        &nbsp;·&nbsp;
+        <span class="overdue-count">{{ overdue_count }} need{{ '' if overdue_count > 1 else 's' }} water</span>
+      {% endif %}
+    </span>
+    <button class="btn-add" onclick="openModal('add-modal-backdrop')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Plant
+    </button>
+  </div>
+
+  <main class="plants-grid">
+    {% if not plants %}
+    <div class="empty-state">
+      <div class="empty-icon">🪴</div>
+      <p>No plants yet — add your first one!</p>
+    </div>
+    {% endif %}
+
+    {% for p in plants %}
+    <article class="plant-card {{ 'overdue' if p.overdue else '' }}">
+      <button class="plant-delete"
+              onclick='deletePlant({{ p.id }}, {{ p.name | tojson }})'
+              title="Remove plant"
+              aria-label="Remove {{ p.name }}">×</button>
+
+      <div class="plant-icon">🪴</div>
+      <div class="plant-name">{{ p.name }}</div>
+      {% if p.species %}<div class="plant-species">{{ p.species }}</div>{% endif %}
+
+      <div class="thirst-bar">
+        <div class="thirst-label">
+          <span>
+            {% if p.days_since is not none %}
+              watered {{ p.days_since }}d ago
+            {% else %}
+              never watered
+            {% endif %}
+          </span>
+          <span>every {{ p.water_every_days }}d</span>
+        </div>
+        <div class="thirst-track">
+          <div class="thirst-fill
+            {{ 'over' if p.overdue else ('high' if p.pct >= 75 else ('mid' if p.pct >= 50 else 'low')) }}"
+            style="width:{{ p.pct }}%"></div>
+        </div>
+      </div>
+
+      <div class="water-status
+        {{ 'alert' if p.overdue else ('warn' if p.pct >= 75 else ('soon' if p.pct >= 50 else 'ok')) }}">
+        {% if p.overdue %}
+          {% if p.days_since is not none %}
+            ⚠️ Overdue by {{ p.days_overdue }} day{{ 's' if p.days_overdue != 1 else '' }}
+          {% else %}
+            ⚠️ Never been watered
+          {% endif %}
+        {% elif p.days_until <= 1 %}
+          💧 Water tomorrow!
+        {% elif p.days_until <= 3 %}
+          💧 Water in {{ p.days_until }} days
+        {% else %}
+          {{ p.days_until }} days until next watering
+        {% endif %}
+      </div>
+
+      {% if p.last_health %}
+      <span class="health-badge health-{{ p.last_health }}">{{ p.last_health }}</span>
+      {% endif %}
+
+      {% if p.last_log_note %}
+      <div class="plant-last-note">"{{ p.last_log_note }}"</div>
+      {% endif %}
+
+      <button class="btn-water"
+              onclick='openWaterModal({{ p.id }}, {{ p.name | tojson }})'>
+        💧 Water Now
+      </button>
+    </article>
+    {% endfor %}
+  </main>
+
+  {% if log %}
+  <section class="log-section">
+    <h2>Watering Log</h2>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Plant</th>
+          <th>Health</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in log %}
+        <tr>
+          <td>{{ entry.watered_at[:16].replace('T', ' ') }}</td>
+          <td>{{ entry.plant_name }}</td>
+          <td><span class="health-badge health-{{ entry.health_status }}">{{ entry.health_status }}</span></td>
+          <td>{{ entry.notes or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  <footer class="footer">
+    🌱 plants.johnzhou.xyz
+  </footer>
+
+  <!-- Water modal -->
+  <div class="modal-backdrop" id="water-modal-backdrop"
+       onclick="closeModalOnBackdrop(event, 'water-modal-backdrop')">
+    <div class="modal" role="dialog" aria-labelledby="water-modal-title">
+      <div class="modal-header">
+        <h2 id="water-modal-title">Water Plant</h2>
+        <button class="modal-close" onclick="closeModal('water-modal-backdrop')" aria-label="Close">×</button>
+      </div>
+      <form method="POST" action="/water">
+        <input type="hidden" name="plant_id" id="water-plant-id">
+        <div class="form-group">
+          <label>Health Status</label>
+          <div class="health-options">
+            <div class="health-opt" data-status="thriving">
+              <input type="radio" name="health_status" id="h-thriving" value="thriving">
+              <label for="h-thriving">Thriving</label>
+            </div>
+            <div class="health-opt" data-status="good">
+              <input type="radio" name="health_status" id="h-good" value="good" checked>
+              <label for="h-good">Good</label>
+            </div>
+            <div class="health-opt" data-status="okay">
+              <input type="radio" name="health_status" id="h-okay" value="okay">
+              <label for="h-okay">Okay</label>
+            </div>
+            <div class="health-opt" data-status="struggling">
+              <input type="radio" name="health_status" id="h-struggling" value="struggling">
+              <label for="h-struggling">Struggling</label>
+            </div>
+            <div class="health-opt" data-status="bad">
+              <input type="radio" name="health_status" id="h-bad" value="bad">
+              <label for="h-bad">Bad</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="water-notes">Notes (optional)</label>
+          <textarea class="form-input" id="water-notes" name="notes"
+                    placeholder="Any observations about the plant..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">💧 Log Watering</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add plant modal -->
+  <div class="modal-backdrop" id="add-modal-backdrop"
+       onclick="closeModalOnBackdrop(event, 'add-modal-backdrop')">
+    <div class="modal" role="dialog" aria-labelledby="add-modal-title">
+      <div class="modal-header">
+        <h2 id="add-modal-title">Add Plant</h2>
+        <button class="modal-close" onclick="closeModal('add-modal-backdrop')" aria-label="Close">×</button>
+      </div>
+      <form method="POST" action="/plants">
+        <div class="form-group">
+          <label for="plant-name">Name *</label>
+          <input class="form-input" type="text" id="plant-name" name="name"
+                 placeholder="e.g. Monstera" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="plant-species">Species</label>
+          <input class="form-input" type="text" id="plant-species" name="species"
+                 placeholder="e.g. Monstera deliciosa">
+        </div>
+        <div class="form-group">
+          <label for="plant-freq">Water every (days)</label>
+          <input class="form-input" type="number" id="plant-freq" name="water_every_days"
+                 value="7" min="1" max="365">
+        </div>
+        <div class="form-group">
+          <label for="plant-notes">Care notes</label>
+          <textarea class="form-input" id="plant-notes" name="notes"
+                    placeholder="Light, soil preferences, quirks..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">🪴 Add Plant</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openModal(backdropId) {
+      document.getElementById(backdropId).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(backdropId) {
+      document.getElementById(backdropId).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function closeModalOnBackdrop(e, backdropId) {
+      if (e.target === document.getElementById(backdropId)) closeModal(backdropId);
+    }
+
+    function openWaterModal(plantId, plantName) {
+      document.getElementById('water-plant-id').value = plantId;
+      document.getElementById('water-modal-title').textContent = 'Water: ' + plantName;
+      document.getElementById('h-good').checked = true;
+      document.getElementById('water-notes').value = '';
+      openModal('water-modal-backdrop');
+    }
+
+    async function deletePlant(id, name) {
+      if (!confirm(`Remove "${name}" and all its watering history?`)) return;
+      const res = await fetch('/plants/' + id, { method: 'DELETE' });
+      if (res.ok) location.reload();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.active').forEach(m => {
+          m.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
